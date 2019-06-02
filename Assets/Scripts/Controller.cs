@@ -26,7 +26,7 @@ public class Controller : MonoBehaviour
         InitAdjacencyLists();
         state = Constants.Init;
     }
-        
+
     //Rellenamos el array de casillas y posicionamos las fichas
     void InitTiles()
     {
@@ -51,12 +51,41 @@ public class Controller : MonoBehaviour
         //Matriz de adyacencia
         int[,] matriu = new int[Constants.NumTiles, Constants.NumTiles];
 
-        //TODO: Inicializar matriz a 0's
+        //Inicializar matriz a 0's
+        for(int i = 0; i < Constants.NumTiles; i++)
+        {
+            for(int j = 0; j < Constants.NumTiles; i++)
+            {
+                matriu[i, j] = 0;
+            }
+        }
 
-        //TODO: Para cada posición, rellenar con 1's las casillas adyacentes (arriba, abajo, izquierda y derecha)
-
-        //TODO: Rellenar la lista "adjacency" de cada casilla con los índices de sus casillas adyacentes
-
+        //Rellenar la lista "adjacency" de cada casilla con los índices de sus casillas adyacentes
+        for(int i = 0; i < Constants.NumTiles; i++)
+        {
+            for(int j = 0; j < Constants.NumTiles; j++)
+            {
+                if (i > Constants.NumTiles || i < 0) return;
+                else if (i == j + 1 || i == j - 1 || i == j - 8 || i == j + 8)
+                {
+                    matriu[i, j] = 1;
+                    tiles[i].adjacency.Add(j);
+                }
+                int l = i + 1;
+                if(l % 8 == 0 && l != 0 && l < Constants.NumTiles)
+                {
+                    tiles[i].adjacency.Remove(l);
+                    matriu[i, l] = 0;
+                }
+                int k = i - 1;
+                if (i % 8 == 0 && i != 0)
+                {
+                    tiles[i].adjacency.Remove(i - 1);
+                    matriu[i, i - 1] = 0;
+                }
+                i++;
+            }
+        }
     }
 
     //Reseteamos cada casilla: color, padre, distancia y visitada
@@ -115,7 +144,7 @@ public class Controller : MonoBehaviour
     public void FinishTurn()
     {
         switch (state)
-        {            
+        {
             case Constants.TileSelected:
                 ResetTiles();
 
@@ -131,9 +160,8 @@ public class Controller : MonoBehaviour
                     EndGame(false);
                 break;
         }
-
     }
-
+    
     public void RobberTurn()
     {
         clickedTile = robber.GetComponent<RobberMove>().currentTile;
@@ -163,7 +191,7 @@ public class Controller : MonoBehaviour
         cops[0].GetComponent<CopMove>().Restart(tiles[Constants.InitialCop0]);
         cops[1].GetComponent<CopMove>().Restart(tiles[Constants.InitialCop1]);
         robber.GetComponent<RobberMove>().Restart(tiles[Constants.InitialRobber]);
-                
+
         ResetTiles();
 
         playAgainButton.interactable = false;
@@ -177,7 +205,7 @@ public class Controller : MonoBehaviour
     public void InitGame()
     {
         state = Constants.Init;
-         
+
     }
 
     public void IncreaseRoundCount()
@@ -210,14 +238,5 @@ public class Controller : MonoBehaviour
         }
 
 
-    }
-    
-   
-    
-
-    
-
-   
-
-       
+    }  
 }
