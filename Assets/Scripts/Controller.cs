@@ -19,6 +19,8 @@ public class Controller : MonoBehaviour
     private int state;
     private int clickedTile = -1;
     private int clickedCop = 0;
+
+    List<int> robberTiles = new List<int>();
                     
     void Start()
     {        
@@ -54,7 +56,7 @@ public class Controller : MonoBehaviour
         //Inicializar matriz a 0's
         for(int i = 0; i < Constants.NumTiles; i++)
         {
-            for(int j = 0; j < Constants.NumTiles; i++)
+            for(int j = 0; j < Constants.NumTiles; j++)
             {
                 matriu[i, j] = 0;
             }
@@ -224,19 +226,50 @@ public class Controller : MonoBehaviour
         else
             indexcurrentTile = robber.GetComponent<RobberMove>().currentTile;
 
+        robberTiles.Clear();
+
         //La ponemos rosa porque acabamos de hacer un reset
         tiles[indexcurrentTile].current = true;
 
         //Cola para el BFS
         Queue<Tile> nodes = new Queue<Tile>();
 
-        //TODO: Implementar BFS. Los nodos seleccionables los ponemos como selectable=true
-        //Tendrás que cambiar este código por el BFS
-        for(int i = 0; i < Constants.NumTiles; i++)
+        tiles[indexcurrentTile].visited = true;
+        tiles[indexcurrentTile].distance = 0;
+        tiles[indexcurrentTile].parent = null;
+
+        nodes.Enqueue(tiles[indexcurrentTile]);
+
+        Tile before;
+
+        while(nodes.Count != 0)
         {
-            tiles[i].selectable = true;
+            before = nodes.Dequeue();
+            int before2 = before.numTile;
+
+            foreach (int adyacent in tiles[before2].adjacency)
+            {
+                if (tiles[adyacent].visited == false)
+                {
+                    tiles[adyacent].visited = true;
+                    tiles[adyacent].distance = tiles[before2].distance + 1;
+                    tiles[adyacent].parent = tiles[before2];
+                    nodes.Enqueue(tiles[adyacent]);
+
+                    if (tiles[adyacent].distance <= 2)
+                    {
+                        if (cop == false)
+                        {
+                            robberTiles.Add(tiles[adyacent].numTile);
+                        }
+                        tiles[adyacent].selectable = true;
+                        if (cops[0].GetComponent<CopMove>().currentTile == tiles[adyacent].numTile || cops[1].GetComponent<CopMove>().currentTile == tiles[adyacent].numTile)
+                        {
+                            tiles[adyacent].selectable = false;
+                        }
+                    }
+                }
+            }
         }
-
-
     }  
 }
