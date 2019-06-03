@@ -170,11 +170,15 @@ public class Controller : MonoBehaviour
         tiles[clickedTile].current = true;
         FindSelectableTiles(false);
 
-        /*TODO: Cambia el código de abajo para hacer lo siguiente
-        - Elegimos una casilla aleatoria entre las seleccionables que puede ir el caco
-        - Movemos al caco a esa casilla
-        - Actualizamos la variable currentTile del caco a la nueva casilla
-        */
+        //- Elegimos una casilla aleatoria entre las seleccionables que puede ir el caco
+        System.Random ran = new System.Random();
+        int num = ran.Next(robberTiles.Count);
+        int randomList = robberTiles[num];
+
+        //Actualizamos la variable currentTile del caco a la nueva casilla
+        robber.GetComponent<RobberMove>().currentTile = randomList;
+
+        //Movemos al caco a esa casilla
         robber.GetComponent<RobberMove>().MoveToTile(tiles[robber.GetComponent<RobberMove>().currentTile]);
     }
 
@@ -217,8 +221,7 @@ public class Controller : MonoBehaviour
     }
 
     public void FindSelectableTiles(bool cop)
-    {
-                 
+    {  
         int indexcurrentTile;        
 
         if (cop==true)
